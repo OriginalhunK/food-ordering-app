@@ -1,0 +1,78 @@
+name: Deploy Food Corner to AWS Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+permissions:
+  id-token: write   # Required to request temporary credentials via GitHub OIDC
+  contents: read    # Required to checkout the source repository
+
+jobs:
+  build-and-deploy:
+    name: Build, Package & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # Step 3: Install dependencies and verify syntax
+      - name: Install Dependencies & Verify Syntax
+        run: |
+          npm ci || npm install
+          node -c app.js
+          echo "Syntax verification passed."
+
+      # Step 4: Configure AWS Credentials using OpenID Connect (OIDC)
+      # No long-lived AWS keys are stored in GitHub Secrets
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_REGION }}
+          audience: sts.amazonaws.com
+
+      # Step 5: Package application into a deployment zip
+      # Exclude git metadata and local node_modules (Elastic Beanstalk runs npm install on EC2)
+      - name: Create Deployment Package
+        run: |
+          zip -r food-corner-deploy.zip . \
+            -x ".git/*" \
+            -x ".github/*" \
+            -x "node_modules/*" \
+            -x "*.zip"
+
+      # Step 6: Deploy to AWS Elastic Beanstalk via AWS CLI
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          VERSION_LABEL="release-${{ github.sha }}-${{ github.run_number }}"
+          BUNDLE_NAME="food-corner-${VERSION_LABEL}.zip"
+
+          echo "1. Uploading bundle to S3 bucket: ${{ vars.EB_S3_BUCKET }}"
+          aws s3 cp food-corner-deploy.zip s3://${{ vars.EB_S3_BUCKET }}/${BUNDLE_NAME}
+
+          echo "2. Creating Elastic Beanstalk Application Version: ${VERSION_LABEL}"
+          aws elasticbeanstalk create-application-version \
+            --application-name "${{ vars.EB_APP_NAME }}" \
+            --version-label "${VERSION_LABEL}" \
+            --source-bundle S3Bucket="${{ vars.EB_S3_BUCKET }}",S3Key="${BUNDLE_NAME}" \
+            --description "Deployed via GitHub Actions commit ${{ github.sha }}"
+
+          echo "3. Updating Elastic Beanstalk Environment: ${{ vars.EB_ENV_NAME }}"
+          aws elasticbeanstalk update-environment \
+            --application-name "${{ vars.EB_APP_NAME }}" \
+            --environment-name "${{ vars.EB_ENV_NAME }}" \
+            --version-label "${VERSION_LABEL}"
+
+          echo "Deployment initiated successfully."

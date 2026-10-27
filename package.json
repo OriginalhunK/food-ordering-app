@@ -1,0 +1,22 @@
+{
+  "name": "food-corner",
+  "version": "1.0.0",
+  "description": "Food Corner – Online Food Ordering System for College MCA Project",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [
+    "food-ordering",
+    "express",
+    "nodejs",
+    "vanilla-js",
+    "mca-project",
+    "aws-elastic-beanstalk"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

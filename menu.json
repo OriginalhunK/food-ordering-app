@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Veg Burger",
+    "category": "Fast Food",
+    "price": 80
+  },
+  {
+    "id": 2,
+    "name": "Masala Dosa",
+    "category": "South Indian",
+    "price": 70
+  },
+  {
+    "id": 3,
+    "name": "Paneer Fried Rice",
+    "category": "Main Course",
+    "price": 150
+  },
+  {
+    "id": 4,
+    "name": "Pizza",
+    "category": "Fast Food",
+    "price": 199
+  },
+  {
+    "id": 5,
+    "name": "Sandwich",
+    "category": "Snacks",
+    "price": 60
+  },
+  {
+    "id": 6,
+    "name": "French Fries",
+    "category": "Snacks",
+    "price": 90
+  }
+]

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Corner – Online Food Ordering System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <span class="brand-icon">🍲</span>
+        <div class="brand-text">
+          <span class="brand-title">Food Corner</span>
+          <span class="brand-subtitle">Online Food Ordering System</span>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="#menu-section" class="nav-link">Menu</a>
+        <a href="#order-section" class="nav-link">Place Order</a>
+        <a href="#orders-section" class="nav-link">View Orders</a>
+        <a href="#management-section" class="nav-link">Manage Menu</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Notification Banner (Alerts) -->
+  <div class="notification-container" id="notification-container"></div>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- Welcome Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h2>Delicious Food Delivered Fresh & Fast</h2>
+        <p>Explore our tasty menu, order in seconds, and track your kitchen orders in real time.</p>
+        <div class="hero-actions">
+          <a href="#menu-section" class="btn btn-primary">Browse Menu</a>
+          <a href="#order-section" class="btn btn-secondary">Order Now</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: Food Menu Display -->
+    <section id="menu-section" class="section">
+      <div class="section-header">
+        <div>
+          <h3 class="section-title">Available Food Menu</h3>
+          <p class="section-desc">Choose your favorite dish from our curated college cafeteria menu.</p>
+        </div>
+        <!-- Category Filter -->
+        <div class="category-filters" id="category-filters">
+          <button class="filter-btn active" data-category="all">All</button>
+          <button class="filter-btn" data-category="Fast Food">Fast Food</button>
+          <button class="filter-btn" data-category="South Indian">South Indian</button>
+          <button class="filter-btn" data-category="Main Course">Main Course</button>
+          <button class="filter-btn" data-category="Snacks">Snacks</button>
+        </div>
+      </div>
+
+      <!-- Food Menu Cards Grid -->
+      <div class="menu-grid" id="menu-grid">
+        <div class="loading-state">Loading food items...</div>
+      </div>
+    </section>
+
+    <div class="two-column-layout">
+
+      <!-- SECTION 2: Customer Order Form -->
+      <section id="order-section" class="section card-panel">
+        <div class="panel-header">
+          <h3 class="section-title">📝 Place Customer Order</h3>
+          <p class="section-desc">Select food item, quantity, and confirm order.</p>
+        </div>
+
+        <form id="order-form" class="form-layout" novalidate>
+          <div class="form-group">
+            <label for="customer-name">Customer Name <span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="customer-name" 
+              name="customerName" 
+              placeholder="e.g. Rahul Sharma" 
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="order-dish-select">Select Food Item <span class="required">*</span></label>
+            <select id="order-dish-select" name="dishId" required>
+              <option value="">-- Choose a dish --</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="order-quantity">Quantity <span class="required">*</span></label>
+              <input 
+                type="number" 
+                id="order-quantity" 
+                name="quantity" 
+                min="1" 
+                max="50" 
+                value="1" 
+                required
+              >
+            </div>
+            <div class="form-group">
+              <label>Unit Price</label>
+              <div class="price-display" id="unit-price-display">₹ 0.00</div>
+            </div>
+          </div>
+
+          <!-- Total Calculation Box -->
+          <div class="total-box">
+            <span class="total-label">Estimated Total Amount:</span>
+            <span class="total-amount" id="total-price-display">₹ 0.00</span>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-submit-order">Place Order</button>
+            <button type="button" class="btn btn-outline" id="btn-reset-order">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- SECTION 3: Menu Management (Add / Edit Dish) -->
+      <section id="management-section" class="section card-panel">
+        <div class="panel-header">
+          <h3 class="section-title" id="menu-form-title">➕ Add New Food Item</h3>
+          <p class="section-desc" id="menu-form-desc">Add a new dish to the cafeteria menu.</p>
+        </div>
+
+        <form id="menu-form" class="form-layout" novalidate>
+          <!-- Hidden input for edit mode -->
+          <input type="hidden" id="dish-id" name="dishId" value="">
+
+          <div class="form-group">
+            <label for="dish-name">Dish Name <span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="dish-name" 
+              name="name" 
+              placeholder="e.g. Paneer Tikka Sandwich" 
+              required
+            >
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dish-category">Category <span class="required">*</span></label>
+              <select id="dish-category" name="category" required>
+                <option value="">-- Select Category --</option>
+                <option value="Fast Food">Fast Food</option>
+                <option value="South Indian">South Indian</option>
+                <option value="Main Course">Main Course</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Beverages">Beverages</option>
+                <option value="Dessert">Dessert</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="dish-price">Price (₹) <span class="required">*</span></label>
+              <input 
+                type="number" 
+                id="dish-price" 
+                name="price" 
+                min="1" 
+                step="1" 
+                placeholder="e.g. 120" 
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-save-dish">Add Dish</button>
+            <button type="button" class="btn btn-secondary hidden" id="btn-cancel-edit">Cancel Edit</button>
+          </div>
+        </form>
+      </section>
+
+    </div>
+
+    <!-- SECTION 4: Customer Orders List & Status Management -->
+    <section id="orders-section" class="section">
+      <div class="section-header">
+        <div>
+          <h3 class="section-title">📋 Customer Orders Management</h3>
+          <p class="section-desc">View customer orders, update kitchen preparation status, or remove completed orders.</p>
+        </div>
+        <!-- Status Summary Badges -->
+        <div class="order-stats" id="order-stats">
+          <span class="stat-pill stat-total">Total: <strong id="stat-total-count">0</strong></span>
+          <span class="stat-pill stat-pending">Pending: <strong id="stat-pending-count">0</strong></span>
+          <span class="stat-pill stat-preparing">Preparing: <strong id="stat-preparing-count">0</strong></span>
+          <span class="stat-pill stat-delivered">Delivered: <strong id="stat-delivered-count">0</strong></span>
+          <span class="stat-pill stat-cancelled">Cancelled: <strong id="stat-cancelled-count">0</strong></span>
+        </div>
+      </div>
+
+      <!-- Orders Table Container -->
+      <div class="table-responsive">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer Name</th>
+              <th>Food Item</th>
+              <th>Qty</th>
+              <th>Total (₹)</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr>
+              <td colspan="7" class="loading-state">Loading orders...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Simple Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <p><strong>Food Corner</strong> – Online Food Ordering System | College MCA Web Technology Project</p>
+      <p class="footer-meta">Powered by Node.js, Express.js, Vanilla JavaScript, HTML5 & CSS3 | Ready for AWS Elastic Beanstalk</p>
+    </div>
+  </footer>
+
+  <!-- Client-side Script -->
+  <script src="script.js"></script>
+</body>
+</html>
